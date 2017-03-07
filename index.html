@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Wedding of Aleks Berry and Jon Schleuss in Rush, Arkansas</title>
 
     <meta name="viewport" content="width=device-width">
@@ -142,6 +143,48 @@
             margin: 0 0 10px;
         }
 
+        #music-search {
+            max-width: 450px;
+            margin: 18px auto;
+        }
+
+        #music-search input#search-text, #music-search button {
+            display: inline-block;
+        }
+
+        #music-search input#search-text {
+            height: 30px;
+            border: none;
+            box-shadow: inset 1px 1px 4px rgba(0,0,0,0.3);
+            width: 80%;
+            background: #fff4dc;
+            text-indent: 10px;
+            border-radius: 2px;
+            padding: 0;
+            font-size: 18px;
+            color: #4c4c4c;
+        }
+
+        #music-search button {
+            border: 1px solid #5d7d5c;
+            border-radius: 3px;
+            height: 30px;
+            background: #fff4dc;
+            font-size: 15px;
+            width: 18%;
+            padding: 0px 4px;
+            line-height: 0;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            color: #4c4c4c;
+        }
+
+        #music-search button:hover {
+            background: #3b503a;
+            color: #fff;
+            border: 1px solid #3b503a;
+        }
+
     </style>
 </head>
 <body>
@@ -191,6 +234,21 @@
         
     </section>
 
+    <section id="music">
+        <h1>Help us pick the music</h1>
+        <p>We'll be dancing to a live band, but at some point they'll need a break. What music should we play? Pick a song. Or two. Or 30.</p>
+
+        <div id="music-search">
+            <input id="search-text" type="text">
+            <button id="search-btn">Search</button>
+            <div class="radio-grp">
+                <input type="radio" name="search" value="song" checked> Song
+                <input type="radio" name="search" value="artist"> Artist
+            </div>
+            <div id="result-list"></div>
+        </div>
+    </section>
+
     <section id="accomodations">
         <h1>Accomodations</h1>
 
@@ -204,8 +262,8 @@
     </section>
 
     <section>
-        <h1>RSVP</h1>
-        <p>Contact Judy Loving at <a href="mailto:jrloving@yellville.net">jrloving@yellville.net</a> by January 15, 2017.</p>
+        <h1>Répondez s'il vous plaît</h1>
+        <p>The RSVP deadline has passed. But if you need to change your RSVP contact Judy Loving at <a href="mailto:jrloving@yellville.net">jrloving@yellville.net</a>.</p>
     </section>
 
     <section>
