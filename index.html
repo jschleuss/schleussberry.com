@@ -16,6 +16,7 @@
     <meta property="og:image" content="http://www.schleussberry.com/preview.png" />
     <meta property="og:description" content="Jon and Aleks are getting married on March 25, 2017 in the mining ghost town of Rush, Arkansas." />
 
+    <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
 
     <style type="text/css">
         body {
@@ -239,14 +240,13 @@
         <p>We'll be dancing to a live band, but at some point they'll need a break. What music should we play? Pick a song. Or two. Or 30.</p>
 
         <div id="music-search">
-            <input id="search-text" type="text">
-            <button id="search-btn">Search</button>
-            <div class="radio-grp">
-                <input type="radio" name="search" value="song" checked> Song
-                <input type="radio" name="search" value="artist"> Artist
-            </div>
-            <div id="result-list"></div>
+            <form id="spotify_form">
+                <input id="search-text" type="text">
+                <button id="search-btn">Search</button>
+            </form>
+            <ul id="result-list"></ul>
         </div>
+        <iframe src="https://embed.spotify.com/?uri=spotify:track:0dYn6NGJE0NH93puR4rvmY" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
     </section>
 
     <section id="accomodations">
@@ -289,6 +289,55 @@
 
       ga('create', 'UA-88092224-1', 'auto');
       ga('send', 'pageview');
+    </script>
+
+    <script type="text/javascript">
+        var value;
+
+        $("#spotify_form").submit(function(e) {
+            e.preventDefault();
+        });
+
+        $("#search-text").submit(function(){
+            console.log('hello');
+        })
+
+        // listen for form submit
+        $("#search-btn").click(function() {
+            // clear any previous results
+            $("#result-list li").remove();
+
+            console.log('hello');
+            value = $("#search-text").val();
+
+            // reformat
+            value = value.replace(/'/g, "%27").replace(/\s+/g, '+');
+            console.log(value);
+
+            // see which radio is selected
+
+            var query = "https://api.spotify.com/v1/search?q="+value+"&type=track,artist&market=US";
+
+            // hit Spotify API
+            $.getJSON(query, function( data ) {
+                console.log(data.tracks.items[0].length);
+
+                for (var i = 0; i < data.tracks.items.length; i++) {
+                    var result = data.tracks.items[i];
+                    console.log(result);
+                    $("#result-list").append("<li>"+result.name+" - "+result.artists[0].name+"</li>")
+                }
+                // append results to div
+            });
+        });
+        // get value
+
+
+
+
+
+
+
     </script>
 </body>
 </html>
