@@ -266,6 +266,15 @@
             vertical-align: top;
         }
 
+        #result-list .added {
+            opacity: 0.5;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+        #result-list .added::before {
+            content: '';
+        }
+
         #see-current-list {
             text-align: center;
             cursor: pointer;
@@ -410,7 +419,7 @@
                 $("#result-list").show();
                 // see which radio is selected
 
-                var query = "https://api.spotify.com/v1/search?q="+value+"&type=track,artist&market=US";
+                var query = "https://api.spotify.com/v1/search?q="+value+"&type=track,artist,album&market=US";
 
                 // hit Spotify API
                 $.getJSON(query, function( data ) {
@@ -420,7 +429,7 @@
                     for (var i = 0; i < data.tracks.items.length; i++) {
                         var result = data.tracks.items[i];
                         console.log(result);
-                        $("#result-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span><span class='add' data-song='"+result.uri+"'>recommend</span></li>");
+                        $("#result-list").append("<li><span class='artist'>"+result.artists[0].name + " - "+result.album.name+"</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span><span class='add' data-song='"+result.uri+"'>recommend</span></li>");
                     }
 
                     previewListener();
@@ -432,31 +441,14 @@
                         spotifyApi.setAccessToken('BQCL4L02Ma0Oza9uwuORlWzE6xjb8-p1BZCB3cHAmM38yB_4o2jGqUrxEtIWxT51uYmo8WCmmnIodZT7IudyUV_9e0_Hkm35XHXTfPycei2SHHo3vPErFusvK7P3jvtiJdzbbZtbFlAKs9vOp84Mz3DP6uEPdUUqNLmqy2W7m1tto1nJnTad48rWuaGkJpKuwIBA14VdJ2fhQSJe_MakGDE5G_JLLgtlfmDPZucwBKmFQGH1EwsMX2i_');
 
                         var songURI = [$(this).attr("data-song")];
-                        console.log(songURI);
 
-                        spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI)
-                        .then(function(data) {
-                            console.log(data);
+                        spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI);
 
-                            // update county for total
-                            // var trackcount = data.tracks.items.length;
-                            // $("#playlist-count").text(trackcount + ' tracks added so far');
-                            // // console.log('User playlist', data);
+                        // update button text
+                        $(this).text("added");
+                        $(this).addClass("added");
+                        $(this).removeClass("add");
 
-                            // $("#playlist-list").show();
-                            // $("#playlist-list li").remove();
-
-                            // // append results to div
-                            // for (var i = 0; i < data.tracks.items.length; i++) {
-                            //     var result = data.tracks.items[i].track;
-                            //     // console.log(result);
-                            //     $("#playlist-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span></li>");
-                            // }
-
-                            // previewListener();
-                        }, function(err) {
-                            console.error(err);
-                        });
                         pullPlaylist();
                     });
 
@@ -495,7 +487,7 @@
                 for (var i = 0; i < data.tracks.items.length; i++) {
                     var result = data.tracks.items[i].track;
                     // console.log(result);
-                    $("#playlist-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span></li>");
+                    $("#playlist-list").append("<li><span class='artist'>"+result.artists[0].name + " - "+result.album.name+"</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span></li>");
                 }
 
                 previewListener();
