@@ -17,6 +17,7 @@
     <meta property="og:description" content="Jon and Aleks are getting married on March 25, 2017 in the mining ghost town of Rush, Arkansas." />
 
     <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="spotify-web-api.js"></script>
 
     <style type="text/css">
         body {
@@ -186,65 +187,70 @@
             border: 1px solid #3b503a;
         }
 
-        #result-list {
+        #result-list, #playlist-list {
             margin: 10px 0;
             padding: 0;
             max-height: 400px;
             overflow: scroll;
-            box-shadow: inset 2px 2px 7px rgba(0,0,0,0.5);
+            border: 1px solid #fff4dc;
             -webkit-overflow-scrolling: touch;
+            display: none;
         }
 
-        #result-list li {
+        #result-list li, #playlist-list li {
             list-style: none;
             padding: 10px;
             font-size: 20px;
             margin: 0;
         }
 
-        #result-list li:hover {
+        #result-list li:hover, #playlist-list li:hover {
             background: rgba(255,255,255,0.1);
         }
 
-        #result-list li iframe {
+        #result-list li iframe, #playlist-list li iframe {
             margin: 5px 0 0 0;
         }
 
-        #result-list .artist {
+        #result-list .artist, #playlist-list .artist {
             display: inline-block;
             width: 100%;
             font-size: 12px;
             text-transform: uppercase;
         }
 
-        #result-list .song {
+        #result-list .song, #playlist-list .song {
             display: inline-block;
             width: 100%;
         }
 
-        #result-list .preview {
+        #result-list .preview, #playlist-list .preview {
             cursor: pointer;
             display: inline-block;
             margin: 0 15px 0 0;
+            font-size: 16px;
+            text-transform: uppercase;
         }
 
         #result-list .add {
             cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
         }
 
-        #result-list .preview:hover, #result-list .add:hover {
+        #result-list .preview:hover, #result-list .add:hover, #playlist-list .preview:hover {
             text-decoration: underline;
         }
 
-        #result-list .preview::before {
+        #result-list .preview::before, #playlist-list .preview::before {
             content: '';
             display: inline-block;
             position: relative;
             top: 1px;
             left: 3px;
             border-style: solid;
-            border-width: 7px 0 7px 14px;
-            margin: 0 8px 0 0;
+            border-width: 6px 0 6px 12px;
+            margin: 0 8px 2px 0;
             border-color: transparent transparent transparent #fff4dc;
         }
 
@@ -256,11 +262,14 @@
             top: 1px;
             left: 3px;
             margin: 0 8px 0 0;
+            line-height: 24px;
+            vertical-align: top;
         }
 
         #see-current-list {
             text-align: center;
             cursor: pointer;
+            margin: 10px 0;
         }
 
         #see-current-list:hover {
@@ -317,7 +326,7 @@
 
     <section id="music">
         <h1>Help us pick the music</h1>
-        <p>We'll be dancing to a live band, but at some point they'll need a break. What music should we play? Pick a song. Or two. Or 30.</p>
+        <p>We'll be dancing to a live band, but at some point they'll need a break. What music should we play? Pick a song. Or two. Or 10.</p>
 
         <div id="music-search">
             <form id="spotify_form">
@@ -327,6 +336,7 @@
             <ul id="result-list"></ul>
 
             <div id="see-current-list">(see the current playlist)</div>
+            <h2 id="playlist-count"></h2>
             <ul id="playlist-list"></ul>
         </div>
     </section>
@@ -389,45 +399,122 @@
             // clear any previous results
             $("#result-list li").remove();
 
-            console.log('hello');
             value = $("#search-text").val();
 
-            // reformat
-            value = value.replace(/'/g, "%27").replace(/\s+/g, '+');
-            console.log(value);
+            if (value.length > 4) {
 
-            // see which radio is selected
+                // reformat
+                value = value.replace(/'/g, "%27").replace(/\s+/g, '+');
+                console.log(value);
 
-            var query = "https://api.spotify.com/v1/search?q="+value+"&type=track,artist&market=US";
+                $("#result-list").show();
+                // see which radio is selected
 
-            // hit Spotify API
-            $.getJSON(query, function( data ) {
-                console.log(data.tracks.items[0].length);
+                var query = "https://api.spotify.com/v1/search?q="+value+"&type=track,artist&market=US";
 
-                for (var i = 0; i < data.tracks.items.length; i++) {
-                    var result = data.tracks.items[i];
-                    console.log(result);
-                    $("#result-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>preview</span></span><span class='add'>request</span></li>");
-                }
-                // append results to div
+                // hit Spotify API
+                $.getJSON(query, function( data ) {
+                    console.log(data.tracks.items[0].length);
 
-                // listen for preview click
-                $(".preview").click(function(){
-                    // remove any old previews
-                    $("#result-list iframe").remove();
+                    // append results to div
+                    for (var i = 0; i < data.tracks.items.length; i++) {
+                        var result = data.tracks.items[i];
+                        console.log(result);
+                        $("#result-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span><span class='add' data-song='"+result.uri+"'>recommend</span></li>");
+                    }
 
-                    // add preview iframe
-                    $(this).parent().append('<iframe src="https://embed.spotify.com/?uri='+$(this).attr("data-song")+'" width="100%" height="80" frameborder="0" allowtransparency="true"></iframe>')
-                    
+                    previewListener();
+
+                    // whenever a song is recommended
+                    $(".add").click(function(){
+
+                        var spotifyApi = new SpotifyWebApi();
+                        spotifyApi.setAccessToken('BQCL4L02Ma0Oza9uwuORlWzE6xjb8-p1BZCB3cHAmM38yB_4o2jGqUrxEtIWxT51uYmo8WCmmnIodZT7IudyUV_9e0_Hkm35XHXTfPycei2SHHo3vPErFusvK7P3jvtiJdzbbZtbFlAKs9vOp84Mz3DP6uEPdUUqNLmqy2W7m1tto1nJnTad48rWuaGkJpKuwIBA14VdJ2fhQSJe_MakGDE5G_JLLgtlfmDPZucwBKmFQGH1EwsMX2i_');
+
+                        var songURI = $(this).attr("data-song");
+                        console.log(songURI);
+
+                        spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI)
+                        .then(function(data) {
+                            console.log(data);
+
+                            // update county for total
+                            // var trackcount = data.tracks.items.length;
+                            // $("#playlist-count").text(trackcount + ' tracks added so far');
+                            // // console.log('User playlist', data);
+
+                            // $("#playlist-list").show();
+                            // $("#playlist-list li").remove();
+
+                            // // append results to div
+                            // for (var i = 0; i < data.tracks.items.length; i++) {
+                            //     var result = data.tracks.items[i].track;
+                            //     // console.log(result);
+                            //     $("#playlist-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span></li>");
+                            // }
+
+                            // previewListener();
+                        }, function(err) {
+                            console.error(err);
+                        });
+                        pullPlaylist();
+                    });
+
 
                 });
-            });
+
+            }
+
         });
 
     // get current playlist
-    ("#see-current-list").click(function(){
+    $("#see-current-list").click(function(){
+        // spotify:user:schleuss:playlist:5EJ0Gsqz0DTo1SacjR2ag1
+        // spotify:user:schleuss
+        pullPlaylist();
 
     });      
+
+    function pullPlaylist() {
+
+        var spotifyApi = new SpotifyWebApi();
+
+        spotifyApi.setAccessToken('BQCL4L02Ma0Oza9uwuORlWzE6xjb8-p1BZCB3cHAmM38yB_4o2jGqUrxEtIWxT51uYmo8WCmmnIodZT7IudyUV_9e0_Hkm35XHXTfPycei2SHHo3vPErFusvK7P3jvtiJdzbbZtbFlAKs9vOp84Mz3DP6uEPdUUqNLmqy2W7m1tto1nJnTad48rWuaGkJpKuwIBA14VdJ2fhQSJe_MakGDE5G_JLLgtlfmDPZucwBKmFQGH1EwsMX2i_');
+
+        spotifyApi.getPlaylist('schleuss', '5EJ0Gsqz0DTo1SacjR2ag1')
+            .then(function(data) {
+                // update county for total
+                var trackcount = data.tracks.items.length;
+                $("#playlist-count").text(trackcount + ' tracks added so far');
+                // console.log('User playlist', data);
+
+                $("#playlist-list").show();
+                $("#playlist-list li").remove();
+
+                // append results to div
+                for (var i = 0; i < data.tracks.items.length; i++) {
+                    var result = data.tracks.items[i].track;
+                    // console.log(result);
+                    $("#playlist-list").append("<li><span class='artist'>"+result.artists[0].name + "</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span></li>");
+                }
+
+                previewListener();
+            }, function(err) {
+                console.error(err);
+            });
+    }
+
+    function previewListener() {
+        // listen for preview click
+        $(".preview").click(function(){
+            // remove any old previews
+            $("#result-list iframe").remove();
+            $("#playlist-list iframe").remove();
+
+            // add preview iframe
+            $(this).parent().append('<iframe src="https://embed.spotify.com/?uri='+$(this).attr("data-song")+'" width="100%" height="80" frameborder="0" allowtransparency="true"></iframe>')
+        });        
+    }
 
 
 
