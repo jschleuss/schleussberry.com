@@ -1,3 +1,6 @@
+colors:
+    areas:
+        - &background       '#5d7d5c'
 sources:
     mapzen:
         type: TopoJSON
@@ -39,6 +42,20 @@ layers:
         draw:
             lines:
                 order: function() { return feature.sort_rank; }
+        country:
+            filter:
+                any:
+                    - kind: country
+                    - kind_detail: 2
+            draw:
+                lines:
+                    color: '#fef3dd'
+                    width: [[1, 0.5px], [2, 1.0px], [4, 1.5px], [9, 2.5px], [14, 3.5px], [16, 4.5px], [17, 14m]]
+            water:
+                filter: { maritime_boundary: true }
+                draw:
+                    lines:
+                        visible: false
         region:
             filter:
                 any:
@@ -59,8 +76,16 @@ layers:
         data: { source: mapzen }
         draw:
             polygons:
-                order: 3
+                order: function() { return feature.sort_rank; }
                 color: '#666666'
+                visible: false
+        forest-park:
+            filter: {kind: [forest, wood, natural_forest, natural_wood,common, dog_park, garden, golf_course, park, protected_area, national_park, natural_park, nature_reserve,
+                playground, pitch, recreation_ground, village_green, zoo]}
+            draw:
+                polygons:
+                    visible: true
+                    color: [0.325, 0.447, 0.322, 1.00]
     roads:
         data: { source: mapzen}
         filter: { not: { kind: [rail, ferry] } }
@@ -68,6 +93,8 @@ layers:
             lines:
                 order: 4
                 color: '#fef3dd'
+                order: function() { return feature.sort_rank; }
+                cap: round
                 width: [[7,0.0px], [10, .5px], [15, .75px], [17, 5m]]
         highway:
             filter: { kind: highway }
@@ -93,14 +120,57 @@ layers:
                 lines:
                     order: function() { return feature.sort_rank; }
                     color: '#fef3dd'
-                    width: [[8, 0.3px], [9, 0.4px], [12, 0.8px], [13, 1px], [14, 1.3px], [15, 2px], [16, 6m]]
+                    width: [[8, 0.3px], [9, 0.4px], [12, 0.8px], [13, 1px], [14, 3px], [15, 4px], [16, 6m]]
         minor_road:
             filter: { kind: minor_road, not: { kind_detail: service } }
             draw:
                 lines:
                     order: function() { return feature.sort_rank; }
                     color: '#fef3dd'
-                    width: [[12,0px], [13, 0.15px], [14, 0.3px], [15, 1px], [16, 2m]]
+                    width: [[12, 0.25px], [13, 1px], [16, 2m]]
+        service:
+            filter: { kind_detail: service }
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#fef3dd'
+                    width: 1m
+        labels:
+            visible: false
+            filter:
+                $zoom: { min: 7 }
+                not: { kind: [rail, aeroway], is_tunnel: true }
+
+            major_road:
+                filter: { kind: major_road, $zoom: { min: 14 } }
+                draw:
+                    text:
+                        text_source: name
+                        offset: [0px, -14px]
+                        order: function() { return feature.sort_rank; }
+                        repeat_distance: 200px
+                        priority: 3
+                        font:
+                            fill: '#666'
+                            family: 'Arial'
+                            size: 26px
+                            stroke: { color: *background, width: 4 }
+
+
+            minor_road:
+                filter: { kind: minor_road, $zoom: { min: 17 } }
+                draw:
+                    text:
+                        text_source: name
+                        offset: [0px, -14px]
+                        priority: 5
+                        order: function() { return feature.sort_rank; }
+                        font:
+                            fill: '#666'
+                            stroke: { color: white, width: 4 }
+                            family: 'Arial'
+                            size: 26px
+                            stroke: {color: *background, width: 4}
     places:
         data: { source: mapzen, layer: places }
         filter: { not: { kind: [ocean, sea] } }
