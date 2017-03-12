@@ -143,6 +143,7 @@
         #map {
             width: 100%;
             height: 350px;
+            background: #5d7d5c;
         }
 
         ul {
@@ -306,6 +307,32 @@
         .leaflet-bar a.leaflet-disabled {
             background: rgba(254, 243, 221, 0.5);
         }
+
+        .cityLabel, .rushlabel, .smallLabel {
+            -webkit-font-smoothing: antialiased;
+            text-shadow: 0 0 4px #2d3c2d;
+        }
+        .cityLabel {
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .smallLabel {
+            text-align: left;
+            font-size: 18px;
+            line-height: 20px;
+            background: rgba(93, 125, 92, 0.8);
+        }
+
+        .rushlabel, .smallLabel {
+            font-size: 14px;
+            line-height: 16px;
+            font-family: Arial, sans-serif;
+        }
+
+        .yellvillelabel {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -436,9 +463,51 @@
 
         layer.addTo(map);
 
+        var cityPoint = {
+            radius: 4,
+            fillColor: "#fef3dd",
+            color: "#5d7d5c",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 1,
+            clickable: false,
+            className: 'cityMarker'
+        };
+
+        L.marker([36.226607, -92.686328], {icon: L.divIcon ({
+            iconSize: [80, 26],
+            iconAnchor: [40, 12],
+            className: 'cityLabel yellvillelabel',
+            html: "Yellville"
+            })}).addTo(map);
+
+        L.marker([36.132547, -92.571092], {icon: L.divIcon ({
+            iconSize: [200, 26],
+            iconAnchor: [39, 8],
+            className: 'rushlabel',
+            html: "Rush Ghost Town"
+            })}).addTo(map);
+
+        L.marker([36.107040, -92.612170], {icon: L.divIcon ({
+            iconSize: [180, 32],
+            iconAnchor: [-6, 8],
+            className: 'smallLabel',
+            html: "Parking & shuttle at Buffalo River Float Service"
+            })}).addTo(map);
+
+        L.circleMarker([36.132547, -92.571092], cityPoint).addTo(map);
+
+        L.circleMarker([36.107040, -92.612170], cityPoint).addTo(map);
 
 
-
+        map.on('zoomend', function() {
+            var currZoom = map.getZoom();
+            if (currZoom > 10) {
+                $(".yellvillelabel").hide();
+            } else {
+                $(".yellvillelabel").show();
+            }
+        });
 
 
 

@@ -76,7 +76,7 @@ layers:
         data: { source: mapzen }
         draw:
             polygons:
-                order: function() { return feature.sort_rank; }
+                order: 2
                 color: '#666666'
                 visible: false
         forest-park:
@@ -120,7 +120,7 @@ layers:
                 lines:
                     order: function() { return feature.sort_rank; }
                     color: '#fef3dd'
-                    width: [[8, 0.3px], [9, 0.4px], [12, 0.8px], [13, 1px], [14, 3px], [15, 4px], [16, 6m]]
+                    width: [[8, 0.3px], [9, 0.4px], [12, 2px], [13, 3px], [14, 4px], [15, 5px], [16, 6m]]
         minor_road:
             filter: { kind: minor_road, not: { kind_detail: service } }
             draw:
