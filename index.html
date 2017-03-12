@@ -393,6 +393,13 @@
     </script>
 
     <script type="text/javascript">
+        // get spotify token
+        var token;
+        $.getJSON('spotify-token.js', function( data ) {
+            token = data.access_token;
+        });
+
+
         var value;
 
         $("#spotify_form").submit(function(e) {
@@ -438,7 +445,7 @@
                     $(".add").click(function(){
 
                         var spotifyApi = new SpotifyWebApi();
-                        spotifyApi.setAccessToken('BQA1GGboqabJ6ApM-hK2gEnUqQeeGnY2KihEUvIUnBLrA_5jjiJhmCCHWU7OX7xnxm_LQDLcEGlSFtswNNoFXc9KXFJfwJoFe25xYW1pyqY0JVctHcZ_CpxReAbyEpOBmunz11ja2x6fbj5ijkFkzmZPo23iBQroHyVr-tot3C-Iyh7F_KMtYwogYMgdNb3klkayayo6cES20esy59ZLo3LMQQmc50wtD8qm1Br31isGuCWAdl9R969B');
+                        spotifyApi.setAccessToken(token);
 
                         var songURI = [$(this).attr("data-song")];
 
@@ -471,7 +478,7 @@
 
         var spotifyApi = new SpotifyWebApi();
 
-        spotifyApi.setAccessToken('BQA1GGboqabJ6ApM-hK2gEnUqQeeGnY2KihEUvIUnBLrA_5jjiJhmCCHWU7OX7xnxm_LQDLcEGlSFtswNNoFXc9KXFJfwJoFe25xYW1pyqY0JVctHcZ_CpxReAbyEpOBmunz11ja2x6fbj5ijkFkzmZPo23iBQroHyVr-tot3C-Iyh7F_KMtYwogYMgdNb3klkayayo6cES20esy59ZLo3LMQQmc50wtD8qm1Br31isGuCWAdl9R969B');
+        spotifyApi.setAccessToken(token);
 
         spotifyApi.getPlaylist('schleuss', '5EJ0Gsqz0DTo1SacjR2ag1')
             .then(function(data) {
