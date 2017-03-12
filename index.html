@@ -393,9 +393,13 @@
     </script>
 
     <script type="text/javascript">
-        // get spotify token
+        // get date
+        var d = new Date();
+        var n = d.getTime();
+
+        // get spotify token with cache clearing time
         var token;
-        $.getJSON('spotify-token.js', function( data ) {
+        $.getJSON('spotify-token.js?t='+n, function( data ) {
             token = data.access_token;
         });
 
