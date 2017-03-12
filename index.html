@@ -145,10 +145,6 @@
             margin: 0 0 10px;
         }
 
-        #music {
-            display: none;
-        }
-
         #music-search {
             max-width: 450px;
             margin: 18px auto;
@@ -367,7 +363,7 @@
     </section>
 
     <section>
-        <h1>Répondez s'il vous plaît</h1>
+        <h1>RSVP</h1>
         <p>The RSVP deadline has passed. But if you need to change your RSVP contact Judy Loving at <a href="mailto:jrloving@yellville.net">jrloving@yellville.net</a>.</p>
     </section>
 
@@ -442,7 +438,7 @@
                     $(".add").click(function(){
 
                         var spotifyApi = new SpotifyWebApi();
-                        spotifyApi.setAccessToken('BQDezcg4bLJgzfh5XB5lqwFsZx6RgPHXH7eVFIWeFL04BsM-ZyNecMeCMC7EJL4krJaWLURj9pbL3Aj2dhynqBzlz3BAZuUZU81EjuSZfVD1NoycBjZPFJZp5a6bGkqfOhOgL1saUgD5qReXyDisURPxw8pgJnxEgDncYG2G4rS7-n1uP8sbMC9t8MbmvE4JxwOW_E6upmD0a6K03Nt3y7WFB3u7VY19jwkhRApBr2zobdM_3ZduVYQx');
+                        spotifyApi.setAccessToken('BQA1GGboqabJ6ApM-hK2gEnUqQeeGnY2KihEUvIUnBLrA_5jjiJhmCCHWU7OX7xnxm_LQDLcEGlSFtswNNoFXc9KXFJfwJoFe25xYW1pyqY0JVctHcZ_CpxReAbyEpOBmunz11ja2x6fbj5ijkFkzmZPo23iBQroHyVr-tot3C-Iyh7F_KMtYwogYMgdNb3klkayayo6cES20esy59ZLo3LMQQmc50wtD8qm1Br31isGuCWAdl9R969B');
 
                         var songURI = [$(this).attr("data-song")];
 
@@ -475,7 +471,7 @@
 
         var spotifyApi = new SpotifyWebApi();
 
-        spotifyApi.setAccessToken('BQDezcg4bLJgzfh5XB5lqwFsZx6RgPHXH7eVFIWeFL04BsM-ZyNecMeCMC7EJL4krJaWLURj9pbL3Aj2dhynqBzlz3BAZuUZU81EjuSZfVD1NoycBjZPFJZp5a6bGkqfOhOgL1saUgD5qReXyDisURPxw8pgJnxEgDncYG2G4rS7-n1uP8sbMC9t8MbmvE4JxwOW_E6upmD0a6K03Nt3y7WFB3u7VY19jwkhRApBr2zobdM_3ZduVYQx');
+        spotifyApi.setAccessToken('BQA1GGboqabJ6ApM-hK2gEnUqQeeGnY2KihEUvIUnBLrA_5jjiJhmCCHWU7OX7xnxm_LQDLcEGlSFtswNNoFXc9KXFJfwJoFe25xYW1pyqY0JVctHcZ_CpxReAbyEpOBmunz11ja2x6fbj5ijkFkzmZPo23iBQroHyVr-tot3C-Iyh7F_KMtYwogYMgdNb3klkayayo6cES20esy59ZLo3LMQQmc50wtD8qm1Br31isGuCWAdl9R969B');
 
         spotifyApi.getPlaylist('schleuss', '5EJ0Gsqz0DTo1SacjR2ag1')
             .then(function(data) {
