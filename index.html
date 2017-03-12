@@ -18,6 +18,10 @@
 
     <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="spotify-web-api.js"></script>
+    <script type="text/javascript" src="leaflet.js"></script>
+    <script type="text/javascript" src="tangram.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="leaflet.css">
 
     <style type="text/css">
         body {
@@ -127,13 +131,18 @@
             vertical-align: sub;
         }
 
-        #map {
+        #map-section {
             text-align: center;
         }
 
-        #map img {
+        #map-section img {
             width: 100%;
             max-width: 600px;
+        }
+
+        #map {
+            width: 100%;
+            height: 350px;
         }
 
         ul {
@@ -284,6 +293,19 @@
         #see-current-list:hover {
             text-decoration: underline;
         }
+
+        .leaflet-bar a, .leaflet-bar a:hover {
+            background-color: #fef3dd;
+            color: #5d7d5c;
+        }
+
+        .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+            border: none;
+        }
+
+        .leaflet-bar a.leaflet-disabled {
+            background: rgba(254, 243, 221, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -314,7 +336,8 @@
 
     </section>
 
-    <section id="map">
+    <section id="map-section">
+        <div id="map"></div>
         <img src="map.png" alt="Map of northern Arkansas near Yellville and Rush" />
 
     </section>
@@ -393,6 +416,33 @@
     </script>
 
     <script type="text/javascript">
+
+        /* MAP STUFF */
+        var map = L.map('map',{
+            center: new L.LatLng(36.154033, -92.624971),
+            zoom: 11,
+            detectRetina: true,
+            minZoom: 7,
+            maxZoom: 16
+        });
+        map.scrollWheelZoom.disable();
+
+
+
+        var layer = Tangram.leafletLayer({
+            scene: 'scene.yaml',
+            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
+        });
+
+        layer.addTo(map);
+
+
+
+
+
+
+
+        /* SPOTIFY PLAYLIST STUFF */
         // get date
         var d = new Date();
         var n = d.getTime();
@@ -541,7 +591,6 @@
             $(this).parent().append('<iframe src="https://embed.spotify.com/?uri='+$(this).attr("data-song")+'" width="100%" height="80" frameborder="0" allowtransparency="true"></iframe>')
         });        
     }
-
 
 
 

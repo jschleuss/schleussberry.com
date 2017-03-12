@@ -1,0 +1,162 @@
+sources:
+    mapzen:
+        type: TopoJSON
+        url: https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
+        url_params:
+                api_key: mapzen-jxhyJJV
+styles:
+    dashed:
+        base: lines
+        dash: [3, 5]
+        dash_background_color: '#b0def1'
+layers:
+    water:
+        data: { source: mapzen }
+        draw:
+            polygons:
+                order: 2
+                color: '#fef3dd'
+        inland-water:
+            filter:
+                all:
+                    - kind: [lake, water, riverbank, reservoir, playa]
+        river:
+            filter: { kind: [river,canal,stream,dam,ditch,drain], $zoom: { min: 10 } }
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#7899a7'
+                    width: 1px
+                    join: round
+    earth:
+        data: { source: mapzen }
+        draw:
+            polygons:
+                order: 1
+                color: '#5d7d5c'
+    boundaries:
+        data: { source: mapzen, layer: boundaries }
+        draw:
+            lines:
+                order: function() { return feature.sort_rank; }
+        region:
+            filter:
+                any:
+                    - type: state
+                    # territorial here is probably a hack
+                    - kind: [department, region, provincial, territorial]
+                    - kind_detail: 4
+            draw:
+                lines:
+                    color: '#fef3dd'
+                    width: 1px
+            water:
+                filter: { maritime_boundary: true }
+                draw:
+                    lines:
+                        visible: false
+    landuse:
+        data: { source: mapzen }
+        draw:
+            polygons:
+                order: 3
+                color: '#666666'
+    roads:
+        data: { source: mapzen}
+        filter: { not: { kind: [rail, ferry] } }
+        draw:
+            lines:
+                order: 4
+                color: '#fef3dd'
+                width: [[7,0.0px], [10, .5px], [15, .75px], [17, 5m]]
+        highway:
+            filter: { kind: highway }
+            draw:
+                lines:
+                    order: 5
+                    width: [[4,0],[5,0.5px],[7,1px]]
+            link:
+                filter: { is_link: true } # on- and off-ramps, etc
+                draw:
+                    lines:
+                        width: [[8,0px], [14, 3px], [16, 5px], [18, 10m]]
+                tunnel-link:
+                    filter: {is_tunnel: true, $zoom: {min: 13} }
+        tunnel:
+            filter: {is_tunnel: true }
+            draw:
+                roads:
+                    order: 6
+        major_road:
+            filter: { kind: major_road }
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#fef3dd'
+                    width: [[8, 0.3px], [9, 0.4px], [12, 0.8px], [13, 1px], [14, 1.3px], [15, 2px], [16, 6m]]
+        minor_road:
+            filter: { kind: minor_road, not: { kind_detail: service } }
+            draw:
+                lines:
+                    order: function() { return feature.sort_rank; }
+                    color: '#fef3dd'
+                    width: [[12,0px], [13, 0.15px], [14, 0.3px], [15, 1px], [16, 2m]]
+    places:
+        data: { source: mapzen, layer: places }
+        filter: { not: { kind: [ocean, sea] } }
+        draw:
+            text-blend-order:
+                visible: false    # labels are enabled by each layer below
+                font:
+                    family: 'Arial'
+                    # weight: 500
+                    fill: '#fef3dd'
+        populated-places:
+            filter: { kind: locality }
+            yellville:
+                filter:
+                    all:
+                        - source: [openstreetmap, openstreetmap.org]
+                        - name: ["Yellville"]
+                draw:
+                    text:
+                        priority: 1
+                        text_source: function() { return feature["name:en"] || feature["name"]; }
+                        font:
+                            fill: '#fef3dd'
+                            size: 20px
+                            stroke: { color: '#5d7d5c', width: 4 }
+            big-cities:
+                filter:
+                    all:
+                        - source: [openstreetmap, openstreetmap.org]
+                        - name: true
+                        - population: { min: 60000 }
+                        - not: { kind: [country, county, region, island, neighbourhood, suburb, quarter] }
+                        - $zoom: {min: 4, max: 15}
+                        - kind: locality
+                draw:
+                    text:
+                        priority: 1
+                        font:
+                            size: 26px
+                            fill: '#fef3dd'
+                            stroke: { color: '#5d7d5c', width: 6px }
+            small-cities:
+                filter:
+                    all:
+                        - source: [openstreetmap, openstreetmap.org]
+                        - name: true
+                        - population: { max: 60000 }
+                        - not: { kind: [country, county, region, island, neighbourhood, suburb, quarter] }
+                        - $zoom: {min: 8, max: 15}
+                        - kind: locality
+                draw:
+                    text:
+                        # anchor: center
+                        priority: 1
+                        font:
+                            weight: 'lighter'
+                            size: 16px
+                            fill: '#fef3dd'
+                            stroke: { color: '#5d7d5c', width: 4px }
