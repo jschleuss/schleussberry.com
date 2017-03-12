@@ -440,22 +440,52 @@
 
                     // whenever a song is recommended
                     $(".add").click(function(){
+                        var addButton = $(this);
 
                         var spotifyApi = new SpotifyWebApi();
                         spotifyApi.setAccessToken(token);
 
-                        var songURI = [$(this).attr("data-song")];
+                        var songURI = [addButton.attr("data-song")];
 
-                        spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI,1);
+                        // make sure song isn't already in the playlist
+                        spotifyApi.getPlaylist('schleuss', '5EJ0Gsqz0DTo1SacjR2ag1')
+                            .then(function(data) {
+                                // make array of already added songs
+                                var songs = [];
+                                for (var i = 0; i < data.tracks.items.length; i++) {
+                                    var result = data.tracks.items[i].track;
+                                    songs.push(result.uri);
+                                }
 
-                        // update button text
-                        $(this).text("added");
-                        $(this).addClass("added");
-                        $(this).removeClass("add");
+                                // return either a true or false depending on match
+                                if (songs.indexOf(songURI[0]) == -1) {
+                                    // not yet in the playlist
+                                    spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI,{"position": 0})
+                                        .then(function(data) {
+                                            pullPlaylist();
+                                            // update button text
+                                            addButton.text("added");
+                                            addButton.addClass("added");
+                                            addButton.removeClass("add");
+                                        }, function(err) {
+                                            console.error(err);
+                                        });
+                                } else {
+                                    // already in the playlist
+                                    addButton.text("already added");
+                                    addButton.addClass("added");
+                                    addButton.removeClass("add");
+                                    pullPlaylist();
+                                }
 
-                        pullPlaylist();
+
+
+                                // previewListener();
+                            }, function(err) {
+                                console.error(err);
+                            });
+
                     });
-
 
                 });
 
@@ -469,7 +499,9 @@
         // spotify:user:schleuss
         pullPlaylist();
 
-    });      
+    });
+
+
 
     function pullPlaylist() {
 
