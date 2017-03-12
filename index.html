@@ -410,10 +410,6 @@
             e.preventDefault();
         });
 
-        $("#search-text").submit(function(){
-            console.log('hello');
-        })
-
         // listen for form submit
         $("#search-btn").click(function() {
             // clear any previous results
@@ -425,7 +421,6 @@
 
                 // reformat
                 value = value.replace(/'/g, "%27").replace(/\s+/g, '+');
-                console.log(value);
 
                 $("#result-list").show();
                 // see which radio is selected
@@ -434,12 +429,10 @@
 
                 // hit Spotify API
                 $.getJSON(query, function( data ) {
-                    console.log(data.tracks.items[0].length);
 
                     // append results to div
                     for (var i = 0; i < data.tracks.items.length; i++) {
                         var result = data.tracks.items[i];
-                        console.log(result);
                         $("#result-list").append("<li><span class='artist'>"+result.artists[0].name + " - "+result.album.name+"</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span><span class='add' data-song='"+result.uri+"'>recommend</span></li>");
                     }
 
@@ -453,7 +446,7 @@
 
                         var songURI = [$(this).attr("data-song")];
 
-                        spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI);
+                        spotifyApi.addTracksToPlaylist('schleuss','5EJ0Gsqz0DTo1SacjR2ag1',songURI,1);
 
                         // update button text
                         $(this).text("added");
@@ -488,8 +481,7 @@
             .then(function(data) {
                 // update county for total
                 var trackcount = data.tracks.items.length;
-                $("#playlist-count").text(trackcount + ' tracks added so far');
-                // console.log('User playlist', data);
+                $("#playlist-count").text(trackcount + ' songs added so far');
 
                 $("#playlist-list").show();
                 $("#playlist-list li").remove();
@@ -497,7 +489,6 @@
                 // append results to div
                 for (var i = 0; i < data.tracks.items.length; i++) {
                     var result = data.tracks.items[i].track;
-                    // console.log(result);
                     $("#playlist-list").append("<li><span class='artist'>"+result.artists[0].name + " - "+result.album.name+"</span><span class='song'>"+result.name+"</span><span class='preview' data-song='"+result.uri+"'>play</span></span></li>");
                 }
 
